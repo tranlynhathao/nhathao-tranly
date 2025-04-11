@@ -1,0 +1,24 @@
+# .github/workflows/report-failure.yml
+name: Create Issue on Failure
+
+on:
+  workflow_run:
+    workflows: ["CI"]
+    types:
+      - completed
+
+jobs:
+  create-issue:
+    if: ${{ failure() }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Create an issue
+        uses: peter-evans/create-issue@v5
+        with:
+          title: "⚠️ CI failed on ${{ github.workflow }}"
+          body: |
+            Something went wrong in the CI workflow.
+            Commit: ${{ github.sha }}
+            Run: ${{ github.run_id }}
+          labels: bug, ci
+
